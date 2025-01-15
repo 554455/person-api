@@ -1,11 +1,59 @@
 @startuml
-'https://plantuml.com/sequence-diagram
-
 autonumber
+actor individual
+participant PersonService
+participant UserService
+participant IndividualService
+participant keycloak
+database PersonDB
+database user_history
 
-Alice -> Bob: Authentication Request
-Bob --> Alice: Authentication Response
+' Основной процесс регистрации
+individual -> PersonService: registration request to \n api/v1/persons/individuals/create
 
-Alice -> Bob: Another authentication Request
-Alice <-- Bob: another authentication Response
+PersonService -> PersonService: extract IndividualRegistrationDto \n to userDto and IndividualDto
+PersonService -> UserService: create user \n userDto
+UserService -> PersonDB: save user
+
+alt user save failed
+    UserService -> PersonService: error response \n UserCreationFailedException
+    PersonService -> individual: registration failed \n error details
+else user save succeeded
+    UserService -> PersonService: user created successfully
+    PersonService -> user_history: log user creation audit
+    PersonService -> IndividualService: create individual \n individualDto
+    IndividualService -> PersonDB: save individualEntity
+
+    alt individual save failed
+        IndividualService -> PersonService: error response \n IndividualCreationFailedException
+        PersonService -> user_history: log user rollback audit
+        PersonService -> UserService: rollback user creation
+        UserService -> PersonDB: delete user
+        UserService -> user_history: log rollback completion
+        UserService -> PersonService: rollback completed
+        PersonService -> individual: registration failed \n error details
+    else individual save succeeded
+        IndividualService -> PersonService: individual created successfully
+
+        PersonService -> keycloak: register individual in keycloak realm
+        keycloak -> keycloak: create individual keycloak realm entry
+
+        alt keycloak registration failed
+            keycloak -> PersonService: error response \n KeycloakRegistrationFailedException
+            PersonService -> user_history: log keycloak failure rollback
+            PersonService -> IndividualService: rollback individual creation
+            IndividualService -> PersonDB: delete individualEntity
+            IndividualService -> PersonService: rollback completed
+            PersonService -> UserService: rollback user creation
+            UserService -> PersonDB: delete user
+            UserService -> user_history: log full rollback
+            UserService -> PersonService: rollback completed
+            PersonService -> individual: registration failed \n error details
+        else keycloak registration succeeded
+            keycloak -> PersonService: keycloak registration completed
+            PersonService -> user_history: log full success
+            PersonService -> individual: registration completed
+        end
+    end
+end
 @enduml
