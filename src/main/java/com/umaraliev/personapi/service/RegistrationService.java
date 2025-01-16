@@ -83,50 +83,5 @@ public class RegistrationService {
        }
     }
 
-    @Transactional
-    public void updateUser(UUID id, IndividualUpdateDTO individualUpdateDto) {
-
-        Optional<User> optionalUser = userService.getUserById(id);
-        if (!optionalUser.isPresent()) {
-            throw new RuntimeException("User not found with id: " + id);
-        }
-
-        User user = optionalUser.get();
-
-        if (individualUpdateDto.getFirstName() != null) {
-            user.setFirstName(individualUpdateDto.getFirstName());
-        }
-        if (individualUpdateDto.getLastName() != null) {
-            user.setLastName(individualUpdateDto.getLastName());
-        }
-        if (individualUpdateDto.getEmail() != null) {
-            user.setEmail(individualUpdateDto.getEmail());
-        }
-        if (individualUpdateDto.getSecretKey() != null) {
-            user.setSecretKey(individualUpdateDto.getSecretKey());
-        }
-        userService.updateUser(user);
-
-        Address address = user.getAddress();
-
-        if (individualUpdateDto.getAddress() != null) {
-            address.setAddress(individualUpdateDto.getAddress());
-        }
-        if (individualUpdateDto.getZipCode() != null) {
-            address.setZipCode(individualUpdateDto.getZipCode());
-        }
-        if (individualUpdateDto.getCity() != null) {
-            address.setCity(individualUpdateDto.getCity());
-        }
-        if (individualUpdateDto.getState() != null) {
-            address.setState(individualUpdateDto.getState());
-        }
-
-        addressService.updateAddress(address);
-
-        Country country = address.getCountry();
-
-
-    }
 
 }

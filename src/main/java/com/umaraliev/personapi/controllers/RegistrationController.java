@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.umaraliev.personapi.dto.IndividualRegistrationDTO;
 import com.umaraliev.personapi.dto.IndividualUpdateDTO;
 import com.umaraliev.personapi.service.RegistrationService;
+import com.umaraliev.personapi.service.UpdateUserInfoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ import java.util.UUID;
 public class RegistrationController {
 
     private final RegistrationService registrationService;
+    private final UpdateUserInfoService updateUserInfoService;
 
     @PostMapping("/registration")
     public ResponseEntity<HttpStatus> registrationUser(@Valid @RequestBody IndividualRegistrationDTO individualRegistrationDto) throws JsonProcessingException {
@@ -26,7 +28,7 @@ public class RegistrationController {
 
     @PutMapping("/updateUserInfo/{id}")
     public ResponseEntity<HttpStatus> updateUser(@Valid @PathVariable UUID id, @RequestBody IndividualUpdateDTO individualUpdateDto){
-        registrationService.updateUser(id, individualUpdateDto);
+        updateUserInfoService.updateUser(id, individualUpdateDto);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
