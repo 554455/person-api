@@ -1,8 +1,7 @@
 package com.umaraliev.personapi.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.umaraliev.personapi.dto.IndividualRegistrationDTO;
-import com.umaraliev.personapi.dto.IndividualUpdateDTO;
+import com.umaraliev.personapi.dto.IndividualDTO;
 import com.umaraliev.personapi.service.RegistrationService;
 import com.umaraliev.personapi.service.UpdateUserInfoService;
 import jakarta.validation.Valid;
@@ -21,13 +20,13 @@ public class RegistrationController {
     private final UpdateUserInfoService updateUserInfoService;
 
     @PostMapping("/registration")
-    public ResponseEntity<HttpStatus> registrationUser(@Valid @RequestBody IndividualRegistrationDTO individualRegistrationDto) throws JsonProcessingException {
-        registrationService.registrationUser(individualRegistrationDto);
+    public ResponseEntity<HttpStatus> registrationUser(@Valid @RequestBody IndividualDTO individualDto) throws JsonProcessingException {
+        registrationService.registrationUser(individualDto);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PutMapping("/updateUserInfo/{id}")
-    public ResponseEntity<HttpStatus> updateUser(@Valid @PathVariable UUID id, @RequestBody IndividualUpdateDTO individualUpdateDto){
+    public ResponseEntity<HttpStatus> updateUser(@Valid @PathVariable UUID id, @RequestBody IndividualDTO individualUpdateDto){
         updateUserInfoService.updateUser(id, individualUpdateDto);
         return new ResponseEntity<>(HttpStatus.OK);
     }

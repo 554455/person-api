@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -23,5 +24,9 @@ public class IndividualService {
 
     public Individual updateIndividual(Individual individual) {
         return individualRepository.save(individual);
+    }
+
+    public Individual getIndividualById(UUID id) {
+        return individualRepository.findById(id).orElse(null);
     }
 }

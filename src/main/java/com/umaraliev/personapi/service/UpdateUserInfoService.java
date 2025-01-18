@@ -1,9 +1,7 @@
 package com.umaraliev.personapi.service;
 
-import com.umaraliev.personapi.dto.IndividualUpdateDTO;
-import com.umaraliev.personapi.model.Address;
-import com.umaraliev.personapi.model.Country;
-import com.umaraliev.personapi.model.User;
+import com.umaraliev.personapi.dto.IndividualDTO;
+import com.umaraliev.personapi.model.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +21,7 @@ public class UpdateUserInfoService {
     private final UserHistoryService userHistoryService;
 
     @Transactional
-    public void updateUser(UUID id, IndividualUpdateDTO individualUpdateDto) {
+    public void updateUser(UUID id, IndividualDTO individualDto) {
 
         Optional<User> optionalUser = userService.getUserById(id);
         if (!optionalUser.isPresent()) {
@@ -31,29 +29,41 @@ public class UpdateUserInfoService {
         }
 
         User user = optionalUser.get();
+        updateField(user::setFirstName, individualDto.getFirstName());
+        updateField(user::setLastName, individualDto.getLastName());
+        updateField(user::setEmail, individualDto.getEmail());
+        updateField(user::setSecretKey, individualDto.getSecretKey());
+        userService.updateUser(user);
 
-        updateField(user::setFirstName, individualUpdateDto.getFirstName());
-        updateField(user::setLastName, individualUpdateDto.getLastName());
-        updateField(user::setEmail, individualUpdateDto.getEmail());
-        updateField(user::setSecretKey, individualUpdateDto.getSecretKey());
+        Individual individual = individualService.getIndividualById(user.getId());
+
+        updateField(individual::setPassportNumber, individualDto.getPassportNumber());
+        updateField(individual::setPhoneNumber, individualDto.getPhoneNumber());
+        updateField(individual::setEmail, individualDto.getEmail());
+        individualService.updateIndividual(individual);
 
         Address address = user.getAddress();
 
-        updateField(address::setAddress, individualUpdateDto.getAddress());
-        updateField(address::setZipCode, individualUpdateDto.getZipCode());
-        updateField(address::setCity, individualUpdateDto.getCity());
-        updateField(address::setState, individualUpdateDto.getState());
-
+        updateField(address::setAddress, individualDto.getAddress());
+        updateField(address::setZipCode, individualDto.getZipCode());
+        updateField(address::setCity, individualDto.getCity());
+        updateField(address::setState, individualDto.getState());
         addressService.updateAddress(address);
 
         Country country = address.getCountry();
 
-        if (individualUpdateDto.getCountry() != null) {
-            country.setName(individualUpdateDto.getCountry());
+        if (individualDto.getCountry() != null) {
+            country.setName(individualDto.getCountry());
             countryService.updateCountry(country);
         }
 
         countryService.updateCountry(country);
+
+        UserHistory userHistory = userHistoryService.getUserHistoryById(user.getId());
+        userHistory.setReason("Update");
+        userHistory.setComment("Update successful");
+        userHistory.setChangedValues(individualDto);
+        userHistoryService.saveUserHistory(userHistory);
     }
 
     private <T> void updateField(Consumer<T> setter, T value) {

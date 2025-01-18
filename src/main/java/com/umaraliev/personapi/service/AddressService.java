@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -27,8 +26,8 @@ public class AddressService {
         return addressRepository.save(address);
     }
 
-    public Optional<Address> getAddressByID(UUID id) {
-        return addressRepository.findById(id);
+    public Address getAddressByID(UUID id) {
+        return addressRepository.findById(id).orElseThrow(() -> new RuntimeException("Address not found with id: " + id));
     }
 
 }

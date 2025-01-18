@@ -1,5 +1,7 @@
 package com.umaraliev.personapi.model;
 
+import com.umaraliev.personapi.dto.IndividualDTO;
+import com.umaraliev.personapi.service.ConverterHistoryJSONB;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -24,7 +26,8 @@ public class UserHistory {
     private String reason;
     private String comment;
 
+    @Convert(converter = ConverterHistoryJSONB.class)
     @Column(name = "changed_values", columnDefinition = "jsonb")
-    private String changedValues;
+    private IndividualDTO changedValues;
 
 }

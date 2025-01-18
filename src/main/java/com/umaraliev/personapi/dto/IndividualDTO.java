@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
-public class IndividualUpdateDTO {
+public class IndividualDTO {
     private String firstName;
     private String lastName;
 
