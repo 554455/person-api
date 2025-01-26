@@ -1,9 +1,10 @@
 package com.umaraliev.personapi.model;
 
+import com.umaraliev.personapi.converter.ConverterHistoryJSONB;
 import com.umaraliev.personapi.dto.IndividualDTO;
-import com.umaraliev.personapi.service.ConverterHistoryJSONB;
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -16,6 +17,7 @@ public class UserHistory {
     @GeneratedValue
     private UUID id;
 
+    @CreationTimestamp
     private LocalDateTime created;
 
     @ManyToOne

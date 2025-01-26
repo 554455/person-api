@@ -29,6 +29,16 @@ dependencies {
     implementation group: 'io.thorntail', name: 'jsonb', version: '2.5.0.Final'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation group: 'com.google.code.gson', name: 'gson', version: '2.11.0'
+    // MapStruct core
+    compileOnly 'org.projectlombok:lombok:1.18.30' // Основная зависимость Lombok
+    annotationProcessor 'org.projectlombok:lombok:1.18.30' // Обработка аннотаций Lombok
+
+    // MapStruct
+    implementation 'org.mapstruct:mapstruct:1.5.5.Final' // Основная зависимость MapStruct
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final' // Обработка аннотаций MapStruct
+
+    // Связка Lombok и MapStruct
+    annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0' // Для совместимости Lombok и MapStruct
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'org.postgresql:postgresql'
     annotationProcessor 'org.projectlombok:lombok'

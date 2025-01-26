@@ -2,6 +2,7 @@ package com.umaraliev.personapi.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -14,14 +15,15 @@ public class Individual {
     @GeneratedValue
     private UUID id;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     private User user;
 
     private String passportNumber;
     private String phoneNumber;
-    private String email;
+    @CreationTimestamp
     private LocalDateTime verifiedAt;
+    @CreationTimestamp
     private LocalDateTime archivedAt;
     private String status;
 }

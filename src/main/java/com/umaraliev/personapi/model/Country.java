@@ -2,6 +2,7 @@ package com.umaraliev.personapi.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -13,7 +14,9 @@ public class Country {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @CreationTimestamp
     private LocalDateTime created;
+    @CreationTimestamp
     private LocalDateTime updated;
     private String name;
     private String alpha2;

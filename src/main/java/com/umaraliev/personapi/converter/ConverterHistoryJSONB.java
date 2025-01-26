@@ -1,4 +1,4 @@
-package com.umaraliev.personapi.service;
+package com.umaraliev.personapi.converter;
 
 import com.google.gson.Gson;
 import com.umaraliev.personapi.dto.IndividualDTO;
