@@ -26,9 +26,7 @@ repositories {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation group: 'io.thorntail', name: 'jsonb', version: '2.5.0.Final'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation group: 'com.google.code.gson', name: 'gson', version: '2.11.0'
     // MapStruct core
     compileOnly 'org.projectlombok:lombok:1.18.30' // Основная зависимость Lombok
     annotationProcessor 'org.projectlombok:lombok:1.18.30' // Обработка аннотаций Lombok
@@ -39,6 +37,16 @@ dependencies {
 
     // Связка Lombok и MapStruct
     annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0' // Для совместимости Lombok и MapStruct
+
+    // Добавляем зависимость Javers
+    implementation group: 'org.javers', name: 'javers-core', version: '7.7.0'  // Проверьте последнюю версию на сайте Javers или Maven Central
+
+    // Если вы используете Javers с Spring Data JPA
+    implementation 'org.javers:javers-spring:7.7.0'
+    implementation 'org.javers:javers-spring-boot-starter-sql:7.7.0'
+
+    implementation 'commons-beanutils:commons-beanutils:1.9.4' // Убедитесь, что используете актуальную версию
+
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'org.postgresql:postgresql'
     annotationProcessor 'org.projectlombok:lombok'

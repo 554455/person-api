@@ -6,9 +6,11 @@ import com.umaraliev.personapi.service.RegistrationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @RestController("/api/v1/auth")
@@ -16,16 +18,15 @@ import org.springframework.web.bind.annotation.RestController;
 public class IndividualController {
 
     private final RegistrationService registrationService;
-//    private final UpdateUserInfoService updateUserInfoService;
 
     @PostMapping("/registration")
     public Individual registrationUser(@Valid @RequestBody IndividualDTO individualDto){
         return registrationService.registrationUser(individualDto);
     }
 
-//    @PutMapping("/updateUserInfo/{id}")
-//    public ResponseEntity<HttpStatus> updateUser(@Valid @PathVariable UUID id, @RequestBody IndividualDTO individualUpdateDto){
-//        updateUserInfoService.updateUser(id, individualUpdateDto);
-//        return new ResponseEntity<>(HttpStatus.OK);
-//    }
+    @PutMapping("/updateUserInfo/{id}")
+    public ResponseEntity<HttpStatus> updateUser(@Valid @PathVariable UUID id, @RequestBody IndividualDTO individualUpdateDto){
+        registrationService.updateIndividual(id, individualUpdateDto);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }

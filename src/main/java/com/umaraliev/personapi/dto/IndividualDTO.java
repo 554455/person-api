@@ -4,8 +4,10 @@ package com.umaraliev.personapi.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+import org.javers.core.metamodel.annotation.ValueObject;
 
 @Data
+@ValueObject
 public class IndividualDTO {
     private String passportNumber;
     private String phoneNumber;

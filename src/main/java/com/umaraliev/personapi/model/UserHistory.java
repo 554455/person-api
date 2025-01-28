@@ -1,7 +1,5 @@
 package com.umaraliev.personapi.model;
 
-import com.umaraliev.personapi.converter.ConverterHistoryJSONB;
-import com.umaraliev.personapi.dto.IndividualDTO;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
@@ -28,8 +26,7 @@ public class UserHistory {
     private String reason;
     private String comment;
 
-    @Convert(converter = ConverterHistoryJSONB.class)
     @Column(name = "changed_values", columnDefinition = "jsonb")
-    private IndividualDTO changedValues;
+    private String changedValues;
 
 }
