@@ -19,8 +19,8 @@ public class IndividualService {
         return individualRepository.findAll();
     }
 
-    public Individual saveIndividual(Individual individual) {
-        return individualRepository.save(individual);
+    public Optional<Individual> saveIndividual(Individual individual) {
+        return Optional.of(individualRepository.save(individual));
     }
 
     public Individual updateIndividual(Individual individual) {
@@ -29,5 +29,9 @@ public class IndividualService {
 
     public Optional<Individual> getIndividualById(UUID id) {
         return Optional.ofNullable(individualRepository.findById(id).orElse(null));
+    }
+
+    public Boolean existsById(UUID id) {
+        return individualRepository.existsById(id);
     }
 }

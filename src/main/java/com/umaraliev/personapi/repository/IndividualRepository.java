@@ -11,4 +11,7 @@ public interface IndividualRepository extends JpaRepository <Individual, UUID> {
 
     @Query("SELECT i FROM Individual i WHERE i.user.id = :userId")
     Individual findByUser(@Param("userId") UUID userId);
+
+    @Query("SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END FROM Individual u WHERE u.id = :id")
+    boolean existsById(@Param("id") UUID id);
 }

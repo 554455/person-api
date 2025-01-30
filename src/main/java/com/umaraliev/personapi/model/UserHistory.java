@@ -1,10 +1,14 @@
 package com.umaraliev.personapi.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -29,4 +33,15 @@ public class UserHistory {
     @Column(name = "changed_values", columnDefinition = "jsonb")
     private String changedValues;
 
+    public UserHistory(User user, String userType, String reason, String comment, String changedValues) {
+        this.user = user;
+        this.userType = userType;
+        this.reason = reason;
+        this.comment = comment;
+        this.changedValues = changedValues;
+    }
+
+    public UserHistory() {
+
+    }
 }

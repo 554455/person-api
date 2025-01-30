@@ -29,4 +29,8 @@ public class UserService {
     public Optional<User> getUserById(UUID id) {
         return userRepository.findById(id);
     }
+
+    public Boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
 }

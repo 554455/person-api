@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -26,7 +27,7 @@ public class UserHistoryService {
         return userHistoryRepository.save(userHistory);
     }
 
-    public UserHistory getUserHistoryById(UUID id) {
-        return userHistoryRepository.findByUserId(id);
+    public Optional<UserHistory> getUserHistoryById(UUID id) {
+        return Optional.ofNullable(userHistoryRepository.findByUserId(id));
     }
 }
