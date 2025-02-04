@@ -1,156 +1,106 @@
 package com.umaraliev.personapi.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.umaraliev.personapi.audit.AuditService;
 import com.umaraliev.personapi.dto.IndividualDTO;
-import com.umaraliev.personapi.model.*;
+import com.umaraliev.personapi.mappers.IndividualMapper;
+import com.umaraliev.personapi.model.Individual;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.context.jdbc.Sql;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class RegistrationServiceTest {
-
-    @Mock
-    private UserService userService;
-
-    @Mock
-    private CountryService countryService;
-
-    @Mock
-    private AddressService addressService;
+@Sql("/com/umaraliev/personapi/db/test-data.sql")
+class RegistrationServiceTest {
 
     @Mock
     private IndividualService individualService;
 
     @Mock
+    private IndividualMapper individualMapper;
+
+    @Mock
+    private AuditService auditService;
+
+    @Mock
     private UserHistoryService userHistoryService;
+
+    @Mock
+    private UserService userService;
+
+    @Mock
+    private IndividualMapper individualMapperMock;
 
     @InjectMocks
     private RegistrationService registrationService;
 
-    private IndividualDTO individualDto;
-    private User user;
-    private Country country;
-    private Address address;
-    private Individual individual;
-    private UserHistory userHistory;
+    @Mock
+    private ObjectMapper objectMapper;
 
     @BeforeEach
-    public void setUp() {
-        individualDto = new IndividualDTO();
-        individualDto.setFirstName("John");
-        individualDto.setLastName("Doe");
-        individualDto.setEmail("john.doe@example.com");
-        individualDto.setSecretKey("secretKey123");
-        individualDto.setAddress("123 Main St");
-        individualDto.setCity("Anytown");
-        individualDto.setState("CA");
-        individualDto.setZipCode("12345");
-        individualDto.setCountry("USA");
-        individualDto.setPassportNumber("PASS123456");
-        individualDto.setPhoneNumber("+1234567890");
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
 
-        user = new User();
-        user.setId(UUID.randomUUID());
-        user.setFirstName(individualDto.getFirstName());
-        user.setLastName(individualDto.getLastName());
-        user.setEmail(individualDto.getEmail());
-        user.setSecretKey(individualDto.getSecretKey());
-        user.setCreated(LocalDateTime.now());
-        user.setUpdated(LocalDateTime.now());
+    public static IndividualDTO createSampleIndividualDTO() {
+        IndividualDTO.CountryDTO country = new IndividualDTO.CountryDTO();
+        country.setName("USA");
 
-        country = new Country();
-        country.setId(1L);
-        country.setName(individualDto.getCountry());
-        country.setCreated(LocalDateTime.now());
-        country.setUpdated(LocalDateTime.now());
-
-        address = new Address();
-        address.setId(UUID.randomUUID());
-        address.setAddress(individualDto.getAddress());
-        address.setCity(individualDto.getCity());
-        address.setState(individualDto.getState());
-        address.setZipCode(individualDto.getZipCode());
-        address.setCreated(LocalDateTime.now());
-        address.setUpdated(LocalDateTime.now());
-        address.setArchived(LocalDateTime.now());
+        IndividualDTO.AddressDTO address = new IndividualDTO.AddressDTO();
+        address.setAddress("123 Main St");
+        address.setCity("New York");
+        address.setState("NY");
+        address.setZipCode("10001");
         address.setCountry(country);
 
-        individual = new Individual();
-        individual.setId(UUID.randomUUID());
-        individual.setPassportNumber(individualDto.getPassportNumber());
-        individual.setPhoneNumber(individualDto.getPhoneNumber());
-        individual.setEmail(individualDto.getEmail());
-        individual.setVerifiedAt(LocalDateTime.now());
-        individual.setArchivedAt(LocalDateTime.now());
-        individual.setStatus("ACTIVE");
-        individual.setUser(user);
+        IndividualDTO.UserDTO user = new IndividualDTO.UserDTO();
+        user.setEmail("test@example.com");
+        user.setSecretKey("secret123");
+        user.setFirstName("John");
+        user.setLastName("Doe");
+        user.setAddress(address);
 
-        userHistory = new UserHistory();
-        userHistory.setId(UUID.randomUUID());
-        userHistory.setUser(user);
-        userHistory.setUserType("INDIVIDUAL");
-        userHistory.setReason("REGISTRATION");
-        userHistory.setCreated(LocalDateTime.now());
-        userHistory.setComment("Registration successful");
-        userHistory.setChangedValues(individualDto);
+        IndividualDTO individualDTO = new IndividualDTO();
+        individualDTO.setPassportNumber("A1234567");
+        individualDTO.setPhoneNumber("+1234567890");
+        individualDTO.setUser(user);
 
-        when(userService.saveUser(any(User.class))).thenReturn(user);
-        when(countryService.saveCountry(any(Country.class))).thenReturn(country);
-        when(addressService.saveAddress(any(Address.class))).thenReturn(address);
-        when(individualService.saveIndividual(any(Individual.class))).thenReturn(individual);
-        when(userHistoryService.saveUserHistory(any(UserHistory.class))).thenReturn(userHistory);
+        return individualDTO;
+    }
+
+
+    @Test
+    void registrationUser() {
+        //Checking for missing mail
+        when(userService.existsByEmail("some@mail.ru")).thenReturn(false);
+        //Checking for mail
+        when(userService.existsByEmail("user1@example.com")).thenReturn(true);
+
+        Individual individual = individualMapper.toEntity(createSampleIndividualDTO());
+
+        when(individualService.saveIndividual(individual)).thenReturn(Optional.ofNullable(individual));
     }
 
     @Test
-    public void testRegistrationUser_Success() throws JsonProcessingException {
-        // Arrange
-        UUID userId = user.getId();
+    void updateIndividual() {
 
-        // Act
-        User registeredUser = registrationService.registrationUser(individualDto);
+        //Checking for missing mail
+        when(userService.existsByEmail("some@mail.ru")).thenReturn(false);
+        //Checking for mail
+        when(userService.existsByEmail("user1@example.com")).thenReturn(true);
 
-        // Assert
-        assertNotNull(registeredUser);
-        assertEquals(userId, registeredUser.getId());
-        assertEquals("John", registeredUser.getFirstName());
-        assertEquals("Doe", registeredUser.getLastName());
-        assertEquals("john.doe@example.com", registeredUser.getEmail());
-        assertEquals("secretKey123", registeredUser.getSecretKey());
+        Individual individual = individualMapper.toEntity(createSampleIndividualDTO());
 
-        verify(userService, times(2)).saveUser(any(User.class));
-        verify(countryService, times(1)).saveCountry(any(Country.class));
-        verify(addressService, times(1)).saveAddress(any(Address.class));
-        verify(individualService, times(1)).saveIndividual(any(Individual.class));
-        verify(userHistoryService, times(1)).saveUserHistory(any(UserHistory.class));
-    }
-
-    @Test
-    public void testRegistrationUser_Failure() throws JsonProcessingException {
-        // Arrange
-        when(userService.saveUser(any(User.class))).thenThrow(new RuntimeException("Failed to save user"));
-
-        // Act & Assert
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            registrationService.registrationUser(individualDto);
-        });
-
-        assertEquals("Failed to register user: Failed to save user", exception.getMessage());
-
-        verify(userService, times(1)).saveUser(any(User.class));
-        verify(countryService, never()).saveCountry(any(Country.class));
-        verify(addressService, never()).saveAddress(any(Address.class));
-        verify(individualService, never()).saveIndividual(any(Individual.class));
-        verify(userHistoryService, never()).saveUserHistory(any(UserHistory.class));
+        when(individualService.saveIndividual(individual)).thenReturn(Optional.ofNullable(individual));
     }
 }

@@ -47,6 +47,9 @@ dependencies {
 
     implementation 'commons-beanutils:commons-beanutils:1.9.4' // Убедитесь, что используете актуальную версию
 
+    testImplementation group: 'org.mockito', name: 'mockito-core', version: '5.11.0'
+
+
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'org.postgresql:postgresql'
     annotationProcessor 'org.projectlombok:lombok'
