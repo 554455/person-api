@@ -16,11 +16,9 @@ import org.springframework.test.context.jdbc.Sql;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-@Sql("/com/umaraliev/personapi/db/test-data.sql")
 class RegistrationServiceTest {
 
     @Mock
@@ -81,9 +79,8 @@ class RegistrationServiceTest {
 
     @Test
     void registrationUser() {
-        //Checking for missing mail
+
         when(userService.existsByEmail("some@mail.ru")).thenReturn(false);
-        //Checking for mail
         when(userService.existsByEmail("user1@example.com")).thenReturn(true);
 
         Individual individual = individualMapper.toEntity(createSampleIndividualDTO());
@@ -94,9 +91,7 @@ class RegistrationServiceTest {
     @Test
     void updateIndividual() {
 
-        //Checking for missing mail
         when(userService.existsByEmail("some@mail.ru")).thenReturn(false);
-        //Checking for mail
         when(userService.existsByEmail("user1@example.com")).thenReturn(true);
 
         Individual individual = individualMapper.toEntity(createSampleIndividualDTO());

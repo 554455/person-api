@@ -1,6 +1,7 @@
 package com.umaraliev.personapi.controllers;
 
 import com.umaraliev.personapi.dto.IndividualDTO;
+import com.umaraliev.personapi.dto.ResponseIndividualDTO;
 import com.umaraliev.personapi.exception.NotAccessDatabaseException;
 import com.umaraliev.personapi.model.Individual;
 import com.umaraliev.personapi.service.RegistrationService;
@@ -15,25 +16,26 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RequiredArgsConstructor
-@RestController("/api/v1/auth")
+@RestController()
+@RequestMapping("/api/v1/auth")
 @ComponentScan(basePackages = "com.umaraliev.personapi.service")
 public class IndividualController {
 
     private final RegistrationService registrationService;
 
     @PostMapping("/registration")
-    public Individual registrationUser(@Valid @RequestBody IndividualDTO individualDto){
+    public ResponseEntity<ResponseIndividualDTO>  registrationUser(@Valid @RequestBody IndividualDTO individualDto){
         try {
-            return registrationService.registrationUser(individualDto);
+            return new ResponseEntity<>(registrationService.registrationUser(individualDto), HttpStatus.OK);
         }catch (DataAccessException e){
             throw new NotAccessDatabaseException("Failed connect to the database: " + e.getMessage());
         }
     }
 
     @PutMapping("/updateUserInfo/{id}")
-    public Individual updateUser(@Valid @PathVariable UUID id, @RequestBody IndividualDTO individualUpdateDto){
+    public ResponseEntity<ResponseIndividualDTO> updateUser(@Valid @PathVariable UUID id, @RequestBody IndividualDTO individualUpdateDto){
         try {
-            return registrationService.updateIndividual(id, individualUpdateDto);
+            return new ResponseEntity<>(registrationService.updateIndividual(id, individualUpdateDto), HttpStatus.OK);
         }catch (DataAccessException e){
             throw new NotAccessDatabaseException("Failed connect to the database: " + e.getMessage());
         }

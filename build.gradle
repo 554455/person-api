@@ -47,13 +47,14 @@ dependencies {
 
     implementation 'commons-beanutils:commons-beanutils:1.9.4' // Убедитесь, что используете актуальную версию
 
-    testImplementation group: 'org.mockito', name: 'mockito-core', version: '5.11.0'
+    testImplementation 'org.mockito:mockito-inline:5.2.0'
 
 
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'org.postgresql:postgresql'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.junit.jupiter:junit-jupiter'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     testImplementation group: 'org.mockito', name: 'mockito-core', version: '5.15.2'
 }

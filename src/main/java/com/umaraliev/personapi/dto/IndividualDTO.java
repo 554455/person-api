@@ -3,6 +3,7 @@ package com.umaraliev.personapi.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import lombok.Builder;
 import lombok.Data;
 import org.javers.core.metamodel.annotation.ValueObject;
 
@@ -38,4 +39,5 @@ public class IndividualDTO {
     public static class CountryDTO{
         private String name;
     }
+
 }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.umaraliev.personapi.audit.AuditService;
 import com.umaraliev.personapi.dto.IndividualDTO;
+import com.umaraliev.personapi.dto.ResponseIndividualDTO;
 import com.umaraliev.personapi.exception.NotCouldRegisterIndividualException;
 import com.umaraliev.personapi.exception.NotFoundIndividualID;
 import com.umaraliev.personapi.exception.NotCouldSaveIndividualException;
@@ -35,7 +36,7 @@ public class RegistrationService {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Transactional
-    public Individual registrationUser(IndividualDTO individualDto) {
+    public ResponseIndividualDTO registrationUser(IndividualDTO individualDto) {
         log.info("Method: {registrationUser} was called with IndividualDTO: {}", individualDto);
         try {
             if (!userService.existsByEmail(individualDto.getUser().getEmail()) == false)
@@ -52,7 +53,12 @@ public class RegistrationService {
                     objectMapper.writeValueAsString(individualDto)
             );
             userHistoryService.saveUserHistory(userHistory);
-            return individual;
+            ResponseIndividualDTO responseIndividualDTO = new ResponseIndividualDTO(
+                    individual.getId(),
+                    individual.getUser().getSecretKey(),
+                    individual.getUser().getEmail()
+            );
+            return responseIndividualDTO;
         } catch (Exception e) {
             log.error("Failed to register individual: {}", e.getMessage(), e);
             throw new NotCouldRegisterIndividualException("Failed to register individual: " + e.getMessage(), e);
@@ -60,7 +66,7 @@ public class RegistrationService {
     }
 
     @Transactional
-    public Individual updateIndividual(UUID id, IndividualDTO individualDto) {
+    public ResponseIndividualDTO updateIndividual(UUID id, IndividualDTO individualDto) {
         log.info("Method: {updateIndividual} was called with IndividualDTO: {}", individualDto, id);
         Individual oldIndividual;
         try {
@@ -81,6 +87,11 @@ public class RegistrationService {
             log.error("Failed to update individual: {}", e.getMessage(), e);
             throw new NotCouldSaveIndividualException("Failed to update individual: " + e.getMessage(), e);
         }
-        return oldIndividual;
+        ResponseIndividualDTO responseIndividualDTO = new ResponseIndividualDTO(
+                oldIndividual.getId(),
+                oldIndividual.getUser().getSecretKey(),
+                oldIndividual.getUser().getEmail()
+        );
+        return responseIndividualDTO;
     }
 }
