@@ -14,6 +14,8 @@ import com.umaraliev.personapi.model.UserHistory;
 import com.umaraliev.personapi.utils.NullAwareBeanUtilsBean;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.javers.core.Javers;
+import org.javers.core.JaversBuilder;
 import org.javers.core.diff.Diff;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +34,10 @@ public class RegistrationService {
     private final NullAwareBeanUtilsBean nullAwareBeanUtilsBean;
     private final UserHistoryService userHistoryService;
     private final UserService userService;
+
+
+    private  final Javers javers = JaversBuilder.javers().build();
+
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -74,7 +80,8 @@ public class RegistrationService {
                 throw new NotCouldRegisterIndividualException("User with email: " + individualDto.getUser().getEmail() + " already exists");
             oldIndividual = individualService.getIndividualById(id)
                     .orElseThrow(() -> new NotFoundIndividualID("Individual not found with id: " + id));
-            auditService.audit(id, individualDto);
+            Diff diff = auditService.audit(id, individualDto);
+            System.out.println(javers.getJsonConverter().toJson(diff));
             UserHistory userHistory= userHistoryService.getUserHistoryById(oldIndividual.getUser().getId())
                     .orElseThrow(() -> new NotFoundIndividualID("Individual history not found with id: " + id));
             userHistory.setChangedValues(objectMapper.writeValueAsString(individualDto));
