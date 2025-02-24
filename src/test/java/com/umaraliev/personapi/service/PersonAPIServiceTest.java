@@ -12,14 +12,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.context.jdbc.Sql;
 
 import java.util.Optional;
 
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class RegistrationServiceTest {
+class PersonAPIServiceTest {
 
     @Mock
     private IndividualService individualService;
@@ -40,7 +39,7 @@ class RegistrationServiceTest {
     private IndividualMapper individualMapperMock;
 
     @InjectMocks
-    private RegistrationService registrationService;
+    private PersonAPIService personAPIService;
 
     @Mock
     private ObjectMapper objectMapper;
