@@ -31,7 +31,7 @@ public class IndividualController {
         }
     }
 
-    @PutMapping("/updateUserInfo/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<ResponseIndividualDTO> updateUser(@Valid @PathVariable UUID id, @RequestBody IndividualDTO individualUpdateDto){
         try {
             return new ResponseEntity<>(personAPIService.updateIndividual(id, individualUpdateDto), HttpStatus.OK);

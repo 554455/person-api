@@ -8,6 +8,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.umaraliev.personapi.dto.IndividualDTO;
 import com.umaraliev.personapi.dto.ResponseIndividualDTO;
+import com.umaraliev.personapi.model.Individual;
+import com.umaraliev.personapi.service.IndividualService;
+import com.umaraliev.personapi.service.PersonAPIService;
 import org.junit.jupiter.api.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +22,7 @@ import org.springframework.http.*;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -29,6 +33,9 @@ public class IndividualControllerIntegrationTest {
     private static final Logger log = LoggerFactory.getLogger(IndividualControllerIntegrationTest.class);
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private IndividualService individualService;
 
     @Autowired
     private TestRestTemplate restTemplate;
@@ -73,27 +80,44 @@ public class IndividualControllerIntegrationTest {
                 "/api/v1/auth/registration",
                 new HttpEntity<>(createTestIndividualDTO()), ResponseIndividualDTO.class);
         assertNotNull(responseEntity.getBody());
-        id=responseEntity.getBody().getId();
         log.info("Response status *testRegistrationUser()* code: {}", responseEntity);
+
+
+        id=responseEntity.getBody().getId();
+
+        Optional<Individual> individual = individualService.getIndividualById(id);
+        Boolean isFilled = individualService.existsById(id);
+
+        assertEquals(true, isFilled);
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(createTestIndividualDTO().getUser().getEmail(), responseEntity.getBody().getEmail());
         assertEquals(createTestIndividualDTO().getUser().getSecretKey(), responseEntity.getBody().getSecretKey());
+        assertEquals(individual.orElseThrow().getPassportNumber(), createTestIndividualDTO().getPassportNumber());
+        assertEquals(individual.orElseThrow().getPhoneNumber(), createTestIndividualDTO().getPhoneNumber());
     }
 
     @Test
     @Order(2)
     public void testUpdateUser() throws Exception {
         IndividualDTO individualDTO = createTestIndividualDTO();
+        individualDTO.setPhoneNumber("333-5678");
         individualDTO.getUser().setEmail("test_update@example.com");
-        log.info(id.toString());
+        individualDTO.getUser().getAddress().setAddress("Updated Address");
+        individualDTO.getUser().getAddress().getCountry().setName("Updated Country");
 
         ResponseEntity<ResponseIndividualDTO> responseEntity = restTemplate.exchange(
-                "/api/v1/auth/updateUserInfo/" + id,
+                "/api/v1/auth/update/" + id.toString(),
                 HttpMethod.PUT,
                 new HttpEntity<>(individualDTO),
                 ResponseIndividualDTO.class
         );
         log.info("Response status *testUpdateUser()* code: {}", responseEntity);
-        assertEquals(individualDTO.getUser().getEmail(), responseEntity.getBody().email);
+
+        Optional<Individual> individual = individualService.getIndividualById(id);
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals(individual.orElseThrow().getPhoneNumber(), individualDTO.getPhoneNumber());
+        assertEquals(individual.orElseThrow().getUser().getEmail(), individualDTO.getUser().getEmail());
+        assertEquals(individual.orElseThrow().getUser().getAddress().getAddress(), individualDTO.getUser().getAddress().getAddress());
+        assertEquals(individual.orElseThrow().getUser().getAddress().getCountry().getName(), individualDTO.getUser().getAddress().getCountry().getName());
     }
 }

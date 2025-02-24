@@ -1,6 +1,5 @@
 package com.umaraliev.personapi.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.umaraliev.personapi.audit.AuditService;
 import com.umaraliev.personapi.dto.IndividualDTO;
@@ -25,7 +24,7 @@ import java.util.UUID;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class RegistrationService {
+public class PersonAPIService {
 
 
     private final IndividualService individualService;
